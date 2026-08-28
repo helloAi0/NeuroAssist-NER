@@ -67,7 +67,7 @@ async def get_ai_summary(db: AsyncSession = Depends(get_db)):
     
     try:
         response = await client.aio.models.generate_content(
-            model='gemini-1.5-flash', # Updated to a standard valid model name
+            model='gemini-1.5-flash',
             contents=prompt
         )
         return {"summary": response.text.strip()}
@@ -139,33 +139,27 @@ async def evaluate_performance_drop(events_list: List[schemas.SyncEventRequest])
                 print(f"\n[CRITICAL ALERT TRIGGERED] Cognitive score drop detected!")
                 print(f"Event ID: {event_data.id} | Score: {score} | Errors: {errors}")
                 print(f"Action: Dispatching push notification to caregiver's device...\n")
-                # In production: Fire Firebase Cloud Messaging (FCM) or SendGrid email API here.
                 
         elif e_type == 'reaction_time':
             avg_ms = payload.get('average_ms', 0)
-            if avg_ms > 1500: # Took more than 1.5 seconds to react
+            if avg_ms > 1500:
                 print(f"\n[WARNING ALERT] Severe reaction time delay detected ({avg_ms}ms).")
 
 @app.get("/api/analytics/trends")
 async def get_analytics_trends(db: AsyncSession = Depends(get_db)):
-    # Fetch all events sequentially by time
     result = await db.execute(
         select(models.SyncEvent)
         .order_by(models.SyncEvent.synced_at.asc())
     )
     events = result.scalars().all()
 
-    # Dictionary to hold aggregated daily stats
     daily_stats = defaultdict(lambda: {"total_score": 0, "total_errors": 0, "session_count": 0})
 
     for event in events:
-        # Format the datetime into a clean YYYY-MM-DD string for chart grouping
         date_key = event.synced_at.strftime("%Y-%m-%d")
         
-        # Ensure payload is a dictionary (handles both String and JSON column types)
         payload = event.payload if isinstance(event.payload, dict) else json.loads(event.payload)
         
-        # Safely extract metrics, defaulting to 0 if missing
         score = payload.get("score", 0)
         errors = payload.get("errors", 0)
 
@@ -173,7 +167,6 @@ async def get_analytics_trends(db: AsyncSession = Depends(get_db)):
         daily_stats[date_key]["total_errors"] += errors
         daily_stats[date_key]["session_count"] += 1
 
-    # Calculate final daily averages for the mobile charting library
     trends_response = []
     for date_str, stats in daily_stats.items():
         trends_response.append({
@@ -187,7 +180,6 @@ async def get_analytics_trends(db: AsyncSession = Depends(get_db)):
 
 @app.get("/api/ai/insights")
 async def get_predictive_insights(db: AsyncSession = Depends(get_db)):
-    # Fetch all historical events
     result = await db.execute(
         select(models.SyncEvent)
         .order_by(models.SyncEvent.synced_at.asc())
@@ -197,7 +189,6 @@ async def get_predictive_insights(db: AsyncSession = Depends(get_db)):
     if len(events) < 5:
         return {"insight": "More data needed. Continue playing daily modules to unlock predictive insights."}
 
-    # Compress data for the AI context window
     historical_data = []
     for event in events:
         payload = event.payload if isinstance(event.payload, dict) else json.loads(event.payload)
@@ -220,7 +211,7 @@ async def get_predictive_insights(db: AsyncSession = Depends(get_db)):
     
     try:
         response = await client.aio.models.generate_content(
-            model='gemini-1.5-flash', # Updated to standard model name
+            model='gemini-1.5-flash',
             contents=prompt
         )
         return {"insight": response.text.strip()}
