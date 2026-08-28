@@ -1,18 +1,17 @@
-from fastapi import FastAPI, Depends, HTTPException
+import os
+import json
+from typing import List
+from collections import defaultdict
+
+from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from typing import List
-from collections import defaultdict
-import json
-from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
+from google import genai
 
 import models
 import schemas
 from database import engine, get_db
-
-from google import genai
-import os
 
 app = FastAPI(title="NeuroAssist API")
 
@@ -68,7 +67,7 @@ async def get_ai_summary(db: AsyncSession = Depends(get_db)):
     
     try:
         response = await client.aio.models.generate_content(
-            model='gemini-3.6-flash',
+            model='gemini-1.5-flash', # Updated to a standard valid model name
             contents=prompt
         )
         return {"summary": response.text.strip()}
@@ -79,7 +78,7 @@ async def get_ai_summary(db: AsyncSession = Depends(get_db)):
 @app.post("/api/sync", response_model=schemas.SyncBatchResponse)
 async def sync_events(
     batch: schemas.SyncBatchRequest, 
-    background_tasks: BackgroundTasks, # Added dependency
+    background_tasks: BackgroundTasks, 
     db: AsyncSession = Depends(get_db)
 ):
     synced_count = 0
@@ -119,8 +118,6 @@ async def evaluate_performance_drop(events_list: List[schemas.SyncEventRequest])
     """
     Background task to scan newly synced events for cognitive anomalies.
     """
-    import json
-    
     for event_data in events_list:
         e_type = str(event_data.type or event_data.event_type or "unknown")
         payload = event_data.payload
@@ -223,7 +220,7 @@ async def get_predictive_insights(db: AsyncSession = Depends(get_db)):
     
     try:
         response = await client.aio.models.generate_content(
-            model='gemini-3.6-flash',
+            model='gemini-1.5-flash', # Updated to standard model name
             contents=prompt
         )
         return {"insight": response.text.strip()}

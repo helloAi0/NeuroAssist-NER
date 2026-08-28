@@ -5,4 +5,4 @@ asyncpg
 aiosqlite
 pydantic
 python-dotenv
-google-generativeai
+google-genai
