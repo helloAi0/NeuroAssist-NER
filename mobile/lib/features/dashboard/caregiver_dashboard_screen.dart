@@ -30,8 +30,8 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen> {
 
     try {
       // Fetch both events and the AI summary simultaneously
-      final eventsResponse = await http.get(Uri.parse('http://localhost:8000/api/events'));
-      final summaryResponse = await http.get(Uri.parse('http://localhost:8000/api/summary'));
+      final eventsResponse = await http.get(Uri.parse('https://neuroassist-ner-1.onrender.com/api/events'));
+      final summaryResponse = await http.get(Uri.parse('https://neuroassist-ner-1.onrender.com/api/summary'));
       
       if (eventsResponse.statusCode == 200) {
         setState(() {

@@ -9,7 +9,7 @@ class SyncRepository {
   
   // Dynamically load the URL without nested quotes
   static String get _backendUrl {
-    final baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://127.0.0.1:8000';
+    final baseUrl = dotenv.env['API_BASE_URL'] ?? 'https://neuroassist-ner-1.onrender.com';
     return '$baseUrl/api/sync';
   }
 

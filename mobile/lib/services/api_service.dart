@@ -26,7 +26,7 @@ class TrendData {
 }
 
 // Helper getter to avoid typing this multiple times
-String get _baseUrl => dotenv.env['API_BASE_URL'] ?? 'http://127.0.0.1:8000';
+String get _baseUrl => dotenv.env['API_BASE_URL'] ?? 'https://neuroassist-ner-1.onrender.com';
 
 Future<List<TrendData>> fetchAnalyticsTrends() async {
   final response = await http.get(Uri.parse('$_baseUrl/api/analytics/trends'));

@@ -15,7 +15,7 @@ class _StatsScreenState extends State<StatsScreen> {
   int _pendingEvents = 0;
   List<dynamic> _cloudTrends = [];
   bool _isLoading = true;
-  final String _baseUrl = 'http://127.0.0.1:8000'; // Hardcoded for stage demo reliability
+  final String _baseUrl = 'https://neuroassist-ner-1.onrender.com'; // Hardcoded for stage demo reliability
 
   @override
   void initState() {
