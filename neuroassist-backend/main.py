@@ -231,3 +231,16 @@ async def get_all_events(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(models.SyncEvent))
     events = result.scalars().all()
     return events
+
+@app.get("/")
+async def root():
+    return {"status": "online", "message": "NeuroAssist API is active"}
+
+# Alias to catch sync requests made without the /api prefix
+@app.post("/sync", response_model=schemas.SyncBatchResponse)
+async def sync_alias(
+    batch: schemas.SyncBatchRequest, 
+    background_tasks: BackgroundTasks, 
+    db: AsyncSession = Depends(get_db)
+):
+    return await sync_events(batch, background_tasks, db)
