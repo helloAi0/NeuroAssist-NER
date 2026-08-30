@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "C:/Users/user/Documents/neuroassist-ner/mobile/linux"
+    "cmake.sourceDirectory": "C:/Users/user/Documents/neuroassist-ner/mobile/linux",
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
